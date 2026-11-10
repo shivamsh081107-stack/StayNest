@@ -1,0 +1,89 @@
+<style>
+  .navbar-nav .d-flex {
+      display: flex;
+      align-items: center;
+      width: 400px;
+      height: 54px;
+      border: 1px solid #dddddd;
+      border-radius: 50px;
+      padding: 5px 6px 5px 20px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .navbar-nav .form-control {
+      flex: 1;
+      border: none;
+      outline: none;
+      box-shadow: none !important;
+      border-radius: 50px;
+      font-size: 16px;
+      padding: 0;
+      background-color: transparent;
+  }
+
+  .navbar-nav .form-control::placeholder {
+      color: #717171;
+  }
+
+  .navbar-nav .btn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border: none;
+      border-radius: 50%;
+      background-color: #fe424d;
+      color: white;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0;
+  }
+
+  .navbar-nav .btn::before {
+      content: "\f002";
+      font-family: "Font Awesome 7 Free";
+      font-weight: 900;
+      font-size: 16px;
+  }
+
+  .navbar-nav .btn:hover {
+      background-color: #e31c2a;
+      color: white;
+  }
+
+  .navbar-nav .btn:focus {
+      box-shadow: none;
+  }
+</style>
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/listing"><i class="fa-solid fa-location-arrow"></i></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="/listing">Home</a>
+          <a class="nav-link" href="/listing/new">AirBnb Your Home </a>
+        </div>
+        <div class="navbar-nav ms-auto">
+          <form class="d-flex" role="search" action="/listing" method="get">
+            <input class="form-control me-2" type="search" name="q" value="<%= typeof search !== 'undefined' ? search : '' %>" placeholder="Search by name" aria-label="Search by listing name"/>
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+        </div>
+        <div class="navbar-nav ms-auto">
+          <%if(!currUser){%>
+            <a class="nav-link" href="/signup"><b>Signup</b></a>
+            <a class="nav-link" href="/login"><b>Login</b></a>
+          <%}%>
+          <%if(currUser){%>
+          <a class="nav-link" href="/bookings"><b>Bookings</b></a>
+          <a class="nav-link" href="/logout"><b>Logout</b></a>
+          <%}%>
+        </div>
+      </div>
+    </div>
+  </nav>

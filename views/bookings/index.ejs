@@ -1,0 +1,108 @@
+<% layout("/layouts/boilerplate") %>
+<div class="row mt-3">
+    <div class="col-10 offset-1">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Your bookings</h3>
+            <a class="btn btn-outline-dark" href="/listing">Home</a>
+        </div>
+
+        <h4>Orders you made</h4>
+        <% if (!made.length) { %>
+            <p class="text-muted">You have not booked a stay yet.</p>
+        <% } else { %>
+            <div class="table-responsive mb-4">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Listing</th>
+                            <th>Guest</th>
+                            <th>Dates</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let booking of made) { %>
+                            <tr>
+                                <td>
+                                    <% if (booking.listing) { %>
+                                        <a href="/listing/<%= booking.listing._id %>"><%= booking.listing.title %></a>
+                                    <% } else { %>
+                                        Listing removed
+                                    <% } %>
+                                </td>
+                                <td><%= booking.firstName %> <%= booking.lastName %><br><%= booking.mobile %></td>
+                                <td>
+                                    <%= booking.checkIn.toLocaleDateString("en-IN") %>
+                                    to
+                                    <%= booking.checkOut.toLocaleDateString("en-IN") %>
+                                </td>
+                                <td>&#8377;<%= booking.amount.toLocaleString("en-IN") %></td>
+                                <td><%= booking.status %></td>
+                                <td>
+                                    <% if (booking.status === "pending" || booking.status === "confirmed" || booking.status === "paid") { %>
+                                        <form class="d-inline" method="POST" action="/bookings/<%= booking._id %>/cancel">
+                                            <button class="btn btn-sm btn-outline-dark">Cancel</button>
+                                        </form>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+
+        <h4>Orders received on your listings</h4>
+        <% if (!received.length) { %>
+            <p class="text-muted">No guest has booked your listings yet.</p>
+        <% } else { %>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Listing</th>
+                            <th>Guest</th>
+                            <th>Dates</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (let booking of received) { %>
+                            <tr>
+                                <td>
+                                    <% if (booking.listing) { %>
+                                        <a href="/listing/<%= booking.listing._id %>"><%= booking.listing.title %></a>
+                                    <% } else { %>
+                                        Listing removed
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <%= booking.firstName %> <%= booking.lastName %><br>
+                                    <%= booking.email %> · <%= booking.mobile %>
+                                </td>
+                                <td>
+                                    <%= booking.checkIn.toLocaleDateString("en-IN") %>
+                                    to
+                                    <%= booking.checkOut.toLocaleDateString("en-IN") %>
+                                </td>
+                                <td>&#8377;<%= booking.amount.toLocaleString("en-IN") %></td>
+                                <td><%= booking.status %></td>
+                                <td>
+                                    <% if (booking.status === "pending" || booking.status === "confirmed" || booking.status === "paid") { %>
+                                        <form method="POST" action="/bookings/<%= booking._id %>/cancel">
+                                            <button class="btn btn-sm btn-outline-dark">Cancel</button>
+                                        </form>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>

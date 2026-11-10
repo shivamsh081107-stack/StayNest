@@ -1,0 +1,91 @@
+.navbar{
+    height:4rem;
+    background-color: white;
+}
+html,body{
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+body{
+    min-height: 100vh;
+    display:flex;
+    flex-direction: column;
+}
+.content{
+    flex:1;
+}
+.fa-location-arrow{
+    color:#fe424d;
+    font-size: 2rem;
+}
+.nav-link{
+    color:#222222 !important;
+}
+.f-info {
+    width:100%;
+    text-align: center;
+    background-color: #ebebeb;
+    padding: 1rem 0;
+    margin-top:auto;
+}
+.f-info-links{
+    margin-top: 1rem;
+}
+.f-info-links a{
+    text-decoration: none;
+    color: #222222;  
+}
+.f-info-links a:hover{
+    text-decoration: underline;
+}
+.f-info{
+    text-align: center;
+    background-color:#ebebeb;
+}
+.f-info-socials{
+font-size: 1.2rem;
+margin-bottom: 1rem;
+}
+.f-info-socials i{
+    margin-right: 1rem;
+}
+.listing-card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+.card-img-top{
+    border-radius: 1rem;
+    width: 100% !important;
+    object-fit: cover;
+    height: 20rem;
+}
+.card-body{
+    padding: 0!important;
+}
+.card-text{
+    font-weight: 400;
+}
+.listing-link{
+    text-decoration: none;
+}
+.card-img-overlay:hover{
+background-color: white;
+opacity: 0.2;
+}
+.show-img{
+    height: 50vh;
+    object-fit: cover;
+}
+.btns{
+    display: flex;
+}
+.show-card{
+    padding-left: 0;
+    padding-right: 0;
+}
+#map { 
+height:400px;
+width:80vh;
+}
+

@@ -1,0 +1,330 @@
+<%layout("/layouts/boilerplate")%> 
+
+<style>
+#filter-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+#filters {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.5rem;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.filter-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+#filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter {
+    min-width: 80px;
+    flex-shrink: 0;
+    text-align: center;
+    color: #717171;
+    cursor: pointer;
+    opacity: 0.8;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.filter:hover {
+    color: #222222;
+    opacity: 1;
+}
+
+.filter i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.filter p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding-bottom: 0.45rem;
+    border-bottom: 2px solid transparent;
+}
+
+.filter.active {
+    opacity: 1;
+    color: #222222;
+}
+
+.filter.active p {
+    border-bottom-color: #222222;
+}
+
+.country-filter {
+    flex-shrink: 0;
+}
+
+.country-filter select {
+    width: 11rem;
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    color: #222222;
+    font-size: 0.95rem;
+}
+
+.listing-link.is-hidden {
+    display: none;
+}
+
+#no-match {
+    margin: 2rem 0;
+    color: #717171;
+}
+
+.taxtoggle {
+    flex-shrink: 0;
+    white-space: nowrap;
+    border: 1px solid #ddd;
+    border-radius: 1rem;
+    padding: 0.8rem 1rem;
+    background-color: white;
+}
+
+.taxtoggle .form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.taxtoggle .form-check-label {
+    color: #717171;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.taxtoggle .form-check-input {
+    width: 2.5rem;
+    height: 1.4rem;
+    cursor: pointer;
+}
+</style>
+
+
+<div id="filter-main">
+
+    <div id="filters">
+
+        <button type="button" class="filter" data-category="Trending">
+            <div><i class="fa-solid fa-fire"></i></div>
+            <p>Trending</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Rooms">
+            <div><i class="fa-solid fa-bed"></i></div>
+            <p>Rooms</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Iconic Cities">
+            <div><i class="fa-solid fa-mountain-city"></i></div>
+            <p>Iconic Cities</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Mountains">
+            <div><i class="fa-solid fa-mountain"></i></div>
+            <p>Mountains</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Castles">
+            <div><i class="fa-brands fa-fort-awesome"></i></div>
+            <p>Castles</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Amazing pools">
+            <div><i class="fa-solid fa-person-swimming"></i></div>
+            <p>Amazing pools</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Camping">
+            <div><i class="fa-solid fa-campground"></i></div>
+            <p>Camping</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Farms">
+            <div><i class="fa-solid fa-cow"></i></div>
+            <p>Farms</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Arctic">
+            <div><i class="fa-solid fa-person-snowboarding"></i></div>
+            <p>Arctic</p>
+        </button>
+
+        <button type="button" class="filter" data-category="Beaches">
+            <div><i class="fa-solid fa-umbrella-beach"></i></div>
+            <p>Beaches</p>
+        </button>
+
+    </div>
+
+    <div class="filter-tools">
+    <div class="country-filter">
+        <select id="country-filter" aria-label="Filter by country">
+            <option value="">All countries</option>
+            <% for (let country of countries) { %>
+                <option value="<%= country %>"><%= country %></option>
+            <% } %>
+        </select>
+    </div>
+
+
+    <div class="taxtoggle">
+
+        <div class="form-check form-switch">
+
+            <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="switchCheckDefault"
+            >
+
+            <label
+                class="form-check-label"
+                for="switchCheckDefault"
+            >
+                Display total after taxes
+            </label>
+
+        </div>
+
+    </div>
+    </div>
+
+</div>
+
+
+<% if (search && !alllisting.length) { %>
+<p id="no-match">"<%= search %>" naam ki koi listing nahi mili.</p>
+<% } else { %>
+<p id="no-match" hidden>No listings match these filters.</p>
+<% } %>
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3" id="listing-grid">
+
+    <%for(listing of alllisting){%>
+
+        <a href="/listing/<%=listing.id%>" class="listing-link" data-categories="<%= categoriesFor(listing).join(",") %>" data-country="<%= listing.country %>">
+
+            <div class="card">
+
+                <img
+                    src="<%=listing.image.url%>"
+                    class="card-img-top"
+                    alt="listing_image"
+                >
+
+                <div class="card-img-overlay"></div>
+
+                <div class="card-body">
+
+                    <p class="card-text">
+
+                        <b><%=listing.title%></b>
+
+                        <br>
+
+                        &#8377;<%=listing.price.toLocaleString("en-IN")%>
+
+                        <span class="gst"></span>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </a>
+
+    <% } %>
+
+</div>
+
+
+<script>
+
+    const categoryFilters = document.querySelectorAll(".filter");
+    const countryFilter = document.querySelector("#country-filter");
+    const cards = document.querySelectorAll(".listing-link");
+    const emptyState = document.querySelector("#no-match");
+    let activeCategory = "";
+
+    function applyFilters() {
+        const country = countryFilter.value;
+        let visible = 0;
+
+        cards.forEach((card) => {
+            const categories = card.dataset.categories.split(",");
+            const matchesCategory = !activeCategory || categories.includes(activeCategory);
+            const matchesCountry = !country || card.dataset.country === country;
+            const show = matchesCategory && matchesCountry;
+            card.classList.toggle("is-hidden", !show);
+            if (show) visible += 1;
+        });
+
+        emptyState.hidden = visible !== 0;
+    }
+
+    categoryFilters.forEach((filter) => {
+        filter.addEventListener("click", () => {
+            const category = filter.dataset.category;
+
+            if (activeCategory === category) {
+                activeCategory = "";
+                filter.classList.remove("active");
+            } else {
+                activeCategory = category;
+                categoryFilters.forEach((item) => item.classList.remove("active"));
+                filter.classList.add("active");
+            }
+
+            applyFilters();
+        });
+    });
+
+    countryFilter.addEventListener("change", applyFilters);
+
+    let taxToggle = document.querySelector("#switchCheckDefault");
+
+    taxToggle.addEventListener("click", () => {
+
+        let gst = document.querySelectorAll(".gst");
+
+        gst.forEach((el) => {
+
+            if (taxToggle.checked) {
+
+                el.innerText = " +18% GST";
+
+            } else {
+
+                el.innerText = "";
+
+            }
+
+        });
+
+    });
+
+</script>

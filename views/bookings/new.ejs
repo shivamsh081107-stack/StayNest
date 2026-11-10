@@ -1,0 +1,136 @@
+<% layout("/layouts/boilerplate") %>
+<div class="row mt-3">
+    <div class="col-8 offset-2">
+        <h3>Book <%= stay.title %></h3>
+        <p class="text-muted mb-1"><%= stay.location %>, <%= stay.country %></p>
+        <p><b>&#8377;<%= stay.price.toLocaleString("en-IN") %></b> per night</p>
+
+        <% if (booked.length) { %>
+            <div class="alert alert-warning">
+                Already booked:
+                <% booked.forEach((item) => { %>
+                    <div>
+                        <%= item.checkIn.toLocaleDateString("en-IN") %>
+                        to
+                        <%= item.checkOut.toLocaleDateString("en-IN") %>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <form action="/listing/<%= stay._id %>/book" method="POST" class="needs-validation" novalidate>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="firstName">First name</label>
+                    <input class="form-control" id="firstName" name="booking[firstName]" required>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="lastName">Last name</label>
+                    <input class="form-control" id="lastName" name="booking[lastName]" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="mobile">Mobile number</label>
+                    <input class="form-control" id="mobile" name="booking[mobile]" inputmode="numeric" pattern="[6-9][0-9]{9}" required>
+                    <div class="form-text">10-digit Indian mobile number</div>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="email">Email</label>
+                    <input class="form-control" id="email" type="email" name="booking[email]" value="<%= guest.email %>" required>
+                </div>
+            </div>
+            <div class="row align-items-end">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="otp">OTP</label>
+                    <input class="form-control" id="otp" name="booking[otp]" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+                    <div class="form-text" id="otp-status">OTP mobile par aayega. Phir Verify OTP dabao.</div>
+                </div>
+                <div class="mb-3 col-md-6 d-flex gap-2">
+                    <button class="btn btn-outline-dark" id="send-otp" type="button">Send OTP</button>
+                    <button class="btn btn-dark" id="verify-otp" type="button">Verify OTP</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="checkIn">Check-in</label>
+                    <input class="form-control" id="checkIn" type="date" name="booking[checkIn]" required>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="checkOut">Check-out</label>
+                    <input class="form-control" id="checkOut" type="date" name="booking[checkOut]" required>
+                </div>
+            </div>
+            <p id="stay-total" class="fw-semibold"></p>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="booking[paymentMethod]" id="cod" value="cod" checked required>
+                <label class="form-check-label" for="cod">Cash on delivery</label>
+            </div>
+            <button class="btn btn-danger">Book Now</button>
+            <a class="btn btn-outline-dark" href="/listing/<%= stay._id %>">Back</a>
+        </form>
+    </div>
+</div>
+<script>
+    const price = <%= stay.price %>;
+    const checkIn = document.querySelector("#checkIn");
+    const checkOut = document.querySelector("#checkOut");
+    const total = document.querySelector("#stay-total");
+    const today = new Date().toISOString().split("T")[0];
+    checkIn.min = today;
+
+    function refreshDates() {
+        if (checkIn.value) {
+            const next = new Date(checkIn.value);
+            next.setDate(next.getDate() + 1);
+            checkOut.min = next.toISOString().split("T")[0];
+        }
+        if (checkIn.value && checkOut.value) {
+            const nights = Math.round((new Date(checkOut.value) - new Date(checkIn.value)) / 86400000);
+            total.textContent = nights > 0
+                ? nights + " night(s) · ₹" + (nights * price).toLocaleString("en-IN")
+                : "Check-out must be after check-in";
+        }
+    }
+
+    checkIn.addEventListener("change", refreshDates);
+    checkOut.addEventListener("change", refreshDates);
+
+    const otpStatus = document.querySelector("#otp-status");
+    document.querySelector("#send-otp").addEventListener("click", async () => {
+        otpStatus.textContent = "Sending OTP...";
+        try {
+            const response = await fetch("/listing/<%= stay._id %>/otp", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    mobile: document.querySelector("#mobile").value,
+                    email: document.querySelector("#email").value,
+                }),
+            });
+            const data = await response.json();
+            otpStatus.textContent = data.message || "OTP request failed.";
+        } catch (err) {
+            otpStatus.textContent = "OTP request failed. Refresh the page and try again.";
+        }
+    });
+
+    document.querySelector("#verify-otp").addEventListener("click", async () => {
+        otpStatus.textContent = "Checking OTP...";
+        try {
+            const response = await fetch("/listing/<%= stay._id %>/otp/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({
+                    mobile: document.querySelector("#mobile").value,
+                    email: document.querySelector("#email").value,
+                    otp: document.querySelector("#otp").value,
+                }),
+            });
+            const data = await response.json();
+            otpStatus.textContent = data.message || "OTP check failed.";
+        } catch (err) {
+            otpStatus.textContent = "OTP check failed. Try again.";
+        }
+    });
+</script>
